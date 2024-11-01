@@ -9,11 +9,9 @@ const FormData = require('form-data');
 const app = express();
 const PORT = 8000;
 app.use(cors({ origin: 'http://localhost:3000' }));
-
-// Setup multer for file uploads
 const upload = multer({ dest: 'uploads/' });
 
-// Function to clean and format OCR text output
+
 function extractFields(text) {
   const fields = {
     name: null,
@@ -21,7 +19,6 @@ function extractFields(text) {
     expirationDate: null
   };
 
-  // Remove excessive whitespace and split by lines
   const lines = text
     .split('\n')
     .map(line => line.trim())
@@ -42,6 +39,7 @@ function extractFields(text) {
   return fields;
 }
 
+
 app.post('/extract', upload.single('document'), async (req, res) => {
   if (!req.file) {
     return res.status(400).send('No file uploaded.');
@@ -61,11 +59,12 @@ app.post('/extract', upload.single('document'), async (req, res) => {
     const extractedData = extractFields(rawText);
 
     res.json(extractedData);
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error:', error.message);
     res.status(500).send('Error processing document.');
-  } finally {
-    // Clean up the uploaded file
+  }
+  finally {
     fs.unlink(filePath, (err) => {
       if (err) console.error('Failed to delete file:', err);
     });
